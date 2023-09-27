@@ -2,7 +2,7 @@ package com.example.technicaltaskclearsolutions.exceptions;
 
 import com.example.technicaltaskclearsolutions.exceptions.custom.ParametersNotValidException;
 import com.example.technicaltaskclearsolutions.exceptions.custom.UserNotFoundException;
-import com.example.technicaltaskclearsolutions.exceptions.custom.UserNotValidException;
+import com.example.technicaltaskclearsolutions.exceptions.custom.ValidationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -24,9 +24,11 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
 
-    @ExceptionHandler(UserNotValidException.class)
+    @ExceptionHandler(ValidationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<String> handleUserNotValidException(UserNotValidException e) {
+    public ResponseEntity<String> handleValidationException(ValidationException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
+
+
 }

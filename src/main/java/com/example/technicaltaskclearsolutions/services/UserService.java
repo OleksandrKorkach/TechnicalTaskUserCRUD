@@ -12,11 +12,11 @@ public interface UserService {
 
     List<User> getUsers(Long minAge, Long maxAge);
 
-    void createUser(User user);
+    User createUser(UserRegisterDto userRegisterDto);
 
     User updateUser(Long id, UserRegisterDto updatedUser);
 
-    User partialUpdateUser(Long id, Map<String, Object> updates);
+    User partialUpdateUser(Long id, UserRegisterDto updates);
 
     void deleteUser(Long id);
 }

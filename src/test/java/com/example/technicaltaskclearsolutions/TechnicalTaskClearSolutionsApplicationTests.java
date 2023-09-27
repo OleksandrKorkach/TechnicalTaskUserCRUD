@@ -8,6 +8,7 @@ class TechnicalTaskClearSolutionsApplicationTests {
 
     @Test
     void contextLoads() {
+
     }
 
 }

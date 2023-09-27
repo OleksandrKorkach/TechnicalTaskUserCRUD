@@ -1,11 +1,13 @@
 package com.example.technicaltaskclearsolutions.controllers;
 
 import com.example.technicaltaskclearsolutions.dto.UserRegisterDto;
+import com.example.technicaltaskclearsolutions.exceptions.custom.ValidationException;
 import com.example.technicaltaskclearsolutions.models.User;
 import com.example.technicaltaskclearsolutions.services.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,42 +25,46 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<List<User>> getUsers(
+    public List<User> getUsers(
             @RequestParam(name = "from", required = false, defaultValue = "18") Long minAge,
-            @RequestParam(name = "to", required = false, defaultValue = "120") Long maxAge){
-        List<User> users = userService.getUsers(minAge, maxAge);
-        return ResponseEntity.ok(users);
+            @RequestParam(name = "to", required = false, defaultValue = "120") Long maxAge) {
+        return userService.getUsers(minAge, maxAge);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUser(@PathVariable Long id){
-        User user = userService.getUser(id);
-        return ResponseEntity.ok(user);
+    public User getUser(@PathVariable Long id) {
+        return userService.getUser(id);
     }
 
     @PostMapping
-    public ResponseEntity<User> createUser(@RequestBody UserRegisterDto newUser){
-        User user = UserRegisterDto.toUser(newUser);
-        userService.createUser(user);
-        return ResponseEntity.status(HttpStatus.CREATED).body(user);
+    @ResponseStatus(HttpStatus.CREATED)
+    public User createUser(@RequestBody @Valid final UserRegisterDto newUser,
+                           final BindingResult bindingResult) {
+        if (bindingResult.hasErrors()){
+            throw new ValidationException("Validation not passed!");
+        }
+        return userService.createUser(newUser);
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<User> partialUpdateUser(@PathVariable Long id, @RequestBody Map<String, Object> updates){
-        userService.partialUpdateUser(id, updates);
-        User updatedUser = userService.getUser(id);
-        return ResponseEntity.status(HttpStatus.OK).body(updatedUser);
+    public User partialUpdateUser(@PathVariable Long id,
+                                  @RequestBody UserRegisterDto updates) {
+        return userService.partialUpdateUser(id, updates);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserRegisterDto> updateUser(@PathVariable Long id, @RequestBody UserRegisterDto updatedUser){
-        userService.updateUser(id, updatedUser);
-        return ResponseEntity.status(HttpStatus.OK).body(updatedUser);
+    public User updateUser(@PathVariable Long id,
+                           @RequestBody @Valid UserRegisterDto updatedUser,
+                           final BindingResult bindingResult) {
+        if (bindingResult.hasErrors()){
+            throw new ValidationException("Validation not passed!");
+        }
+        return userService.updateUser(id, updatedUser);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteUser(@PathVariable Long id){
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }
